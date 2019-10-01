@@ -120,6 +120,26 @@ router.put('/:id', (req, res) => {
 })
 
 
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+
+    console.log("id is: ", id)
+
+    dataBase.findById(id)
+    .then((response) => {
+        dataBase.remove(id)
+        .then(()=> {
+            res.status(200).json(response)
+        })
+        .catch((error) => {
+            res.status(500).json({error: "The post could not be removed"})
+        })
+    })
+    .catch((error) => {
+        res.status(500).json({message: "There was an error finding that post"})
+    })
+})
+
 
 // export
 module.exports = router;
