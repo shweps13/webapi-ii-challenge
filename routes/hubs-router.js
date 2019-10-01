@@ -11,15 +11,23 @@ const dataBase = require('../data/db.js');
 router.post('/', (req, res) => {
     const dbData = req.body;
     console.log('dataBase', dbData)
+    const {title,contents} = req.body;
 
-    dataBase.insert(dbData)
-    .then(response => {
-        res.status(201).json(response); 
-    })
-    .catch(error => {
-        res.status(500).json({ error: "There was an error while saving the post to the database" })
-    }); 
-
+    if(title && contents) {
+        dataBase.insert(dbData)
+        .then(response => {
+            dataBase.findById(response.id)
+            .then(result => {
+                res.status(201).json(result)
+            })
+        })
+        .catch(error => {
+            res.status(500).json({ error: "There was an error while saving the post to the database" })
+        }); 
+    }
+    else {
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+    }
 })
 
 // POST comment with ID to database <== still need work
@@ -114,6 +122,7 @@ router.get('/:id/comments', (req, res) => {
 
 // === PUT and DELETE ===
 
+// PUT request
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     const updatedPost = req.body;
@@ -134,24 +143,27 @@ router.put('/:id', (req, res) => {
     }
 })
 
-
+// DELETE request
 router.delete('/:id', (req, res) => {
     const id = req.params.id;
-
-    console.log("id is: ", id)
-
     dataBase.findById(id)
+    .then((response) => {
+        if(response.length === 0) {
+            res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
+        return response;
+    })
     .then((response) => {
         dataBase.remove(id)
         .then(()=> {
             res.status(200).json(response)
         })
         .catch((error) => {
-            res.status(500).json({error: "The post could not be removed"})
+            res.status(500).json({ error: "The post could not be removed" })
         })
     })
     .catch((error) => {
-        res.status(500).json({message: "There was an error finding that post"})
+        res.status(500).json({ error: "The post could not be removed" })
     })
 })
 
