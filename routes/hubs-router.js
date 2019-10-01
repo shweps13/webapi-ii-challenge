@@ -63,5 +63,20 @@ router.get('/:id', (req, res) => {
 
 });
 
+// GET comment by ID
+router.get('/:id/comments', (req, res) => {
+
+    const postId = req.params.id;
+
+    dataBase.findPostComments(postId)
+    .then(response => {
+        res.status(200).json(response)
+    })
+    .catch(error => {
+        res.status(500).send({ error: "The users information could not be retrieved." })
+    });
+
+});
+
 // export
 module.exports = router;
