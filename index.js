@@ -1,8 +1,11 @@
 const express = require('express');
-
 const server = express();
 
+const hubsRouter = require('./routes/hubs-router.js');
+
 server.use(express.json());
+
+server.use('/api/posts', hubsRouter);
 
 server.get('/', (req, res) => {
     res.send(`
