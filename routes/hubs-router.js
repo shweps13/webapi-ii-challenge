@@ -32,7 +32,7 @@ router.post('/:id/comments', (req, res) => {
 
     dataBase.insertComment(comment)
     .then((idObj) => {
-        db.findCommentById(idObj.id)
+        dataBase.findCommentById(idObj.id)
         .then(response => {
             res.status(201).json(response)
         })
@@ -41,7 +41,7 @@ router.post('/:id/comments', (req, res) => {
         })
     })
     .catch(error => {
-        res.status(500).json({ error: "There was an error while saving the comment to the database" })
+        res.status(500).json({ error: "There was an error while saving the comment to the database", error })
     }); 
 
 })
@@ -56,43 +56,58 @@ router.get('/', (req, res) => {
 
     dataBase.find()
     .then(posts => {
-        res.send(posts);
+        res.json(posts);
     })
     .catch(error => {
-        res.status(500).send({ error: "The users information could not be retrieved." })
+        res.status(500).json({ error: "The posts information could not be retrieved." })
     });
 
 });
 
 // GET post by ID
 router.get('/:id', (req, res) => {
-
     const id = req.params.id;
 
     dataBase.findById(id)
-    .then(response => {
-        res.status(200).json(response)
+    .then((response) => {
+        if (response.length >0){
+            res.status(200).json(response)
+        }
+        else {
+            res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
     })
-    .catch(error => {
-        res.status(500).send({ error: "The users information could not be retrieved." })
-    });
-
-});
+    .catch((error) => {
+        res.status(500).json({ error: "The posts information could not be retrieved." })
+    })
+})
 
 // GET comment by ID
 router.get('/:id/comments', (req, res) => {
+    const id = req.params.id;
 
-    const postId = req.params.id;
-
-    dataBase.findPostComments(postId)
-    .then(response => {
-        res.status(200).json(response)
+    dataBase.findById(id)
+    .then((response) => {
+        if (response.length === 0) {
+            res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
+        return response
     })
-    .catch(error => {
-        res.status(500).send({ error: "The users information could not be retrieved." })
-    });
-
-});
+    .then(
+        dataBase.findPostComments(id)
+        .then((response) => {
+            if (response.length > 0) {
+                res.status(200).json(response);
+            }
+            else {
+                res.status(404).json({ message: "The post with the specified ID does not exist." })
+            }
+        })
+        .catch((error) => {
+            res.status(500).json({ error: "The posts information could not be retrieved." })
+        })
+    )
+})
 
 // === END OF GET REQUESTS ===
 
