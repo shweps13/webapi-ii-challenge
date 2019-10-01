@@ -13,5 +13,16 @@
   },
   "devDependencies": {
     "nodemon": "^1.19.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shweps13/webapi-ii-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shweps13/webapi-ii-challenge/issues"
+  },
+  "homepage": "https://github.com/shweps13/webapi-ii-challenge#readme"
 }
